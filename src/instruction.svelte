@@ -16,6 +16,7 @@
 <div class="uk-child-width-1-3@m" uk-grid>
     <div>
         <h3>Шаг 1: скачай Приложение <b>Hiddify</b>:</h3>
+        <p>Как скачаешь и установишь, переходи к <b>Шагу 2</b></p>
         <div>
             <a href="https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777532" target="_blank">
                 <img class="download-link" src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-example-preferred_2x.png"/>
@@ -52,6 +53,9 @@
         <div class="uk-text-center">
             <button class="uk-button uk-button-secondary uk-button-large" onclick={onConnectClick}><b>Подключить ВПН</b></button>
         </div>
+        <p>
+            После этого нажми на большую кнопку <b>Connect</b> в середине экрана.
+        </p>
         <p>
             Если кнопка не работает, скопируй текст ниже и вставь его в Hiddify:
         </p>

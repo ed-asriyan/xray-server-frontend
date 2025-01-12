@@ -7,12 +7,14 @@ export class User {
     parentUuid: string;
     createdAt: Date;
     name: string;
+    lastUsedAt: Date | null;
 
     constructor(data: any) {
         this.childUuid = data['child_uuid'];
         this.parentUuid = data['parent_uuid'];
         this.createdAt = new Date(data['created_at']);
         this.name = data['name'];
+        this.lastUsedAt = data['last_used_at'] ? new Date(data['last_used_at']) : null;
     }
 }
 

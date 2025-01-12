@@ -69,7 +69,7 @@
 
     const rename = async function (database: Database, config: Config): Promise<void> {
         try {
-            const newName = prompt('Введите новое имя:', );
+            const newName = prompt('Введите новое имя:', config.name);
             if (newName) {
                 await database.renameConfig(config.childUuid, newName);
                 UIkit.notification('Имя изменено', { status: 'success' });
@@ -117,38 +117,56 @@
             {/if}
             </p>
         {#if children.length > 0}
-            <table class="uk-table uk-table-small">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Имя (нажми на него, чтобы скопировать ссылку и поделиться)</th>
-                        <th>Дата пригашения</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {#each children.sort((a, b) => +a.createdAt - +b.createdAt) as child, i}
+            <div style="overflow-x: auto;">
+                <table class="uk-table uk-table-small uk-table-divider">
+                    <thead>
                         <tr>
-                            <th>{i + 1}</th>
-                            <td>
-                                <button class="uk-button uk-button-default uk-button-small" uk-tooltip="Переименовать" onclick={() => rename(database, child)}>✍🏻</button>
-                                &nbsp;
-                                <button class="uk-button uk-button-default uk-button-small" uk-tooltip="Скопировать" onclick={() => linkClick(generateShareLink(child.childUuid))}>📄</button>
-                                &nbsp;
-                                <span class="uk-link" uk-tooltip="Нажми, чтобы скопировать" onclick={() => linkClick(generateShareLink(child.childUuid))}>{child.name || child.childUuid} <img width="12" height="12" src="https://img.icons8.com/a7a7a7/material-sharp/24/copy.png" alt="copy--v1"/></span>
-                            </td>
-                            <td>{child.createdAt.toLocaleString()}</td>
+                            <th>#</th>
+                            <!-- <th class="uk-width-small"></th> -->
+                            <th>Имя</th>
+                            <th>Последний раз использовался</th>
+                            <th>Дата пригашения</th>
                         </tr>
-                    {/each}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>
+                    </thead>
+                    <tbody>
+                        {#each children.sort((a, b) => +a.createdAt - +b.createdAt) as child, i}
+                            <tr>
+                                <th>{i + 1}</th>
+                                <td>
+                                    <button class="uk-button uk-button-default uk-button-small uk-text-truncate" uk-tooltip="Переименовать" onclick={() => rename(database, child)}>✍🏻 Переименовать</button>
+
+                                    &nbsp;
+                                    <button class="uk-button uk-button-default uk-button-small uk-text-truncate" uk-tooltip="Скопировать" onclick={() => linkClick(generateShareLink(child.childUuid))}>📄 Поделиться ссылкой</button>
+                                <!-- </td>
+                                <td> -->
+                                    <br class="uk-hidden@s"/>
+                                    &nbsp;
+                                    <span class="uk-text-truncate">{child.name || child.childUuid}</span>
+                                </td>
+                                <td>{child.lastUsedAt ? child.lastUsedAt.toLocaleString() : 'Никогда'}</td>
+                                <td>{child.createdAt.toLocaleString()}</td>
+                            </tr>
+                        {/each}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
         {/if}
     {:catch e}
         <div>Ошибка :(</div>
         <button class="uk-button uk-button-primary" onclick={refresh}>Обновить</button>
     {/await}
 {/key}
+
+<style lang="scss">
+    table {
+        // width: 100vw !important;
+        max-width: 100vw;
+        overflow-x: scroll;
+
+    }
+</style>
