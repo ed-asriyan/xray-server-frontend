@@ -10,20 +10,39 @@
 
   let { config }: Props = $props();
 
-  const parseHash = function(): string {
-      if (!parseHash.value) {
-          parseHash.value = window.location.hash.substring(1);
-          // invalidate location so that users cannot share personal links
-          window.history.pushState({}, '', '/#do-not-share-your-personal-link');
-      }
-      return parseHash.value;
+  interface Params {
+    uuid: string;
+    password: string;
+    consent: boolean;
+  }
+
+  const parseHash = function(): Params {
+    if (!parseHash.value) {
+      const params = new URLSearchParams(window.location.hash.substring(1));
+      parseHash.value = {
+        uuid: params.get('uuid') || window.location.hash.substring(1).split('?')[0],
+        password: params.get('password') || '',
+        consent: params.get('consent') === 'false' ? false : true,
+      };
+      // invalidate location so that users cannot share personal links
+      window.history.pushState({}, '', '/#do-not-share-your-personal-link');
+    }
+    return parseHash.value;
   };
 
-  const hash = parseHash();
+  const params = parseHash();
 
   let database: Database = $state(null);
 
   onMount(async () => {
+    if (params.password) {
+      try {
+        database = await auth(params.password);
+      } catch (e) {
+      }
+    }
+    if (database) return;
+
     const savedPassword = localStorage.getItem('password');
     if (savedPassword) {
       try {
@@ -34,7 +53,7 @@
     if (database) return;
 
     try {
-      database = await auth(hash);
+      database = await auth(params.uuid);
     } catch (e) {
     }
     if (database) return;
@@ -44,7 +63,7 @@
   const auth = async function(password: string): Promise<Database> {
     isLoading = true;
     try {
-      const result = await Database.connect(config, hash, password);
+      const result = await Database.connect(config, params.uuid, password);
       localStorage.setItem('password', password);
       return result;
     } finally {
@@ -66,7 +85,7 @@
 </script>
 
 {#if database}
-  <Account database={database}/>
+  <Account database={database} consent={params.consent}/>
 {:else}
   <div class="uk-flex uk-flex-center uk-flex-middle" style="height: 100vh;">
     <form class="uk-form-stacked" on:submit|preventDefault={onSumbut}>

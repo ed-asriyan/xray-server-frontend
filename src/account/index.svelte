@@ -7,15 +7,18 @@
   import { Database } from '../database';
 
   interface Props {
-      database: Database;
+    database: Database;
+    consent: boolean;
   }
 
-  let { database }: Props = $props();
+  let { database, consent }: Props = $props();
 
   let shareVpnElement: HTMLElement = $state(null);
 </script>
 
-<Consent />
+{#if consent}
+  <Consent />
+{/if}
 <div class="uk-section uk-section-muted uk-padding-remove-top">
   <div class="uk-container uk-container-xsmall uk-margin-top">
     <ChangePassword database={database}/>
